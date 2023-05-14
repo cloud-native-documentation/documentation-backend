@@ -20,3 +20,7 @@ $ python3 manage.py makemigrations usermanagement
 $ python3 manage.py migrate
 $ python3 manage.py runserver
 ```
+Or use the deployment script
+```shell
+sh deploy.sh
+```
