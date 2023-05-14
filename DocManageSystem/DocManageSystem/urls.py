@@ -18,5 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('user/', include('usermanagement.urls'))
+    path('user/', include('usermanagement.urls')),
+    path('document/', include('documentmanagement.urls'))
 ]
