@@ -20,42 +20,14 @@ def doc_view(request):
     return Response(serializer.data)
         
 
-@api_view(['GET', 'POST'])
-def doc_list(request):
-    if request.method == 'GET':
-        docs = Doc.objects.all()
-        serializer = DocSerializer(docs, many=True)
-        return Response(serializer.data)
+@api_view(['POST'])
+def doc_create(request):
+    return Response(serializer.data)
 
-    elif request.method == 'POST':
-        serializer = DocSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            data = {"status": "success"}
-            return Response(data, status=status.HTTP_201_CREATED)
-        data = {"status": "fail"}
-        return Response(data, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['POST'])
+def doc_delete(request):
+    return Response(serializer.data)
 
-
-@api_view(['GET', 'PUT', 'DELETE'])
-def doc_detail(request, pk):
-    try:
-        doc = Doc.objects.get(pk=pk)
-    except Doc.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = DocSerializer(doc)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = DocSerializer(doc, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        doc.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
+@api_view(['POST'])
+def doc_commit(request):
+    return Response(serializer.data)
