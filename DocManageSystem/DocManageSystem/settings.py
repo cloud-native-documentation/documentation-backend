@@ -72,8 +72,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'usermanagement.usermanagemiddleware.JWTMiddleware',  # check token
-    'usermanagement.usermanagemiddleware.AddTokenMiddleware', # add token
-    'django.contrib.messages.middleware.MessageMiddleware',
+    # 'usermanagement.usermanagemiddleware.AddTokenMiddleware', # add token
+    # 'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
 ]
