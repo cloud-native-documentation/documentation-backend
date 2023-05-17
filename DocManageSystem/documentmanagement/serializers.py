@@ -10,4 +10,4 @@ class DocSerializer(serializers.ModelSerializer):
 class DirSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dir
-        fields = ('id', 'dirname', 'dirpath')
+        fields = ('id', 'dirname', 'dirpath', 'list')
