@@ -4,20 +4,6 @@ from rest_framework import status
 from .models import Doc, Dir
 from .serializers import DocSerializer, DirSerializer
 
-@api_view(['GET'])
-def dir_list(request):
-    dirs = Dir.objects.all()
-    serializer = DirSerializer(dirs, many=True)
-    return Response(serializer.data)
-    
-
-@api_view(['GET'])
-def doc_view(request):
-    docs = Doc.objects.all()
-    serializer = DocSerializer(docs, many=True)
-    return Response(serializer.data)
-        
-
 
 @api_view(['POST'])
 def project_create(request):
@@ -33,14 +19,14 @@ def project_delete(request):
     return Response(serializer.data)
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 def project_list(request):
     projects = Project.objects.all()
     serializer = 
     return Response(serializer.data)
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 def project_permission_list(request):
     projects = Project.objects.all()
     serializer = 
