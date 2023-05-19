@@ -26,11 +26,9 @@ def project_list(request):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
-def project_permission_list(request):
-    projects = Project.objects.all()
-    serializer = 
-    return Response(serializer.data)
+# @api_view(['GET'])
+# def project_permission_list(request):
+#     return Response(serializer.data)
 
 
 @api_view(['POST'])
