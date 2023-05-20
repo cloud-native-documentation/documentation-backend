@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import doc_list
+from .views import project_create, project_delete, project_list, dir_create, dir_delete, doc_list, doc_view, doc_create, doc_delete, doc_commit
+
 urlpatterns = [
  path('create_project', project_create), 
  path('delete_project', project_delete), 
