@@ -42,13 +42,12 @@ class Dir(models.Model):
 class Doc(models.Model):
     # Fields
     id = models.AutoField(primary_key=True)
-    docname = models.CharField(max_length=50)
-    directory = models.CharField(max_length=100, default=None)
+    docpath = models.CharField(max_length=100)
     project = models.ForeignKey('Project')
     owner = models.ForeignKey('User')
     public = models.BooleanField(default=False)
     private = models.BooleanField(default=False)
-    content = models.CharField(max_length=50000)
+    # content = models.CharField(max_length=50000)
 
     # Metadata
     class Meta:
