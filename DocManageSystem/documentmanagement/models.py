@@ -9,6 +9,7 @@ class Project(models.Model):
     id = models.AutoField(primary_key=True)
     projectname = models.CharField(max_length=150)
     department = models.CharField(max_length=150)
+    owner = models.CharField(max_length=150)
 
     # Metadata
     class Meta:
@@ -26,6 +27,7 @@ class Dir(models.Model):
     id = models.AutoField(primary_key=True)
     dirname = models.CharField(max_length=150)
     project = models.CharField(max_length=150)
+    owner = models.CharField(max_length=150)
 
     # Metadata
     class Meta:
