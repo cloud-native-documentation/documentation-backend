@@ -1,6 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import AbstractDoc
-
 
 # Create your models here.
 
@@ -13,7 +11,7 @@ class Project(models.Model):
 
     # Metadata
     class Meta:
-        ordering = ['id', 'projectname', 'department']
+        # ordering = ['id', 'projectname', 'department']
         verbose_name = 'project'
         verbose_name_plural = 'projects'
         db_table = 'project'
@@ -31,7 +29,7 @@ class Dir(models.Model):
 
     # Metadata
     class Meta:
-        ordering = ['id', 'dirname', 'project']
+        # ordering = ['id', 'dirname', 'project']
         verbose_name = 'dir'
         verbose_name_plural = 'dirs'
         db_table = 'directory'
@@ -53,7 +51,7 @@ class Doc(models.Model):
 
     # Metadata
     class Meta:
-        ordering = ['id', 'docname', 'directory', 'project', 'owner', 'public', 'private', 'content']
+        # ordering = ['id', 'docname', 'directory', 'project', 'owner', 'public', 'private', 'content']
         verbose_name = 'doc'
         verbose_name_plural = 'docs'
         db_table = 'document'
