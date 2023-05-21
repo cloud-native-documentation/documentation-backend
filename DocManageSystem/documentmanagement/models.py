@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractDoc
 class Project(models.Model):
     # Fields
     id = models.AutoField(primary_key=True)
-    projectname = models.CharField(max_length=50, unique=True)
+    projectname = models.CharField(max_length=50)
     department = models.CharField(max_length=50)
 
     # Metadata
@@ -20,6 +20,23 @@ class Project(models.Model):
     # Methods
     def __str__(self):
         return self.projectname
+
+
+class Dir(models.Model):
+    id = models.AutoField(primary_key=True)
+    dirname = models.CharField(max_length=50)
+    project = models.ForeignKey('Project')
+
+    # Metadata
+    class Meta:
+        ordering = ['id', 'dirname', 'project']
+        verbose_name = 'dir'
+        verbose_name_plural = 'dirs'
+        db_table = 'directory'
+
+    # Methods
+    def __str__(self):
+        return self.dirname
 
 
 class Doc(models.Model):
