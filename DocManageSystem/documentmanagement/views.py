@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Doc, Dir, Project
 import os
-root_dir = './files/'
+root_dir = './files'
 os.system(f'mkdir {root_dir}')
 
 @api_view(['POST'])
@@ -49,7 +49,8 @@ def project_list(request):
 @api_view(['POST'])
 def dir_create(request):
     """get user name"""
-    projectpath = f'{root_dir}{request.data["project"]}'
+    username = request.META.get('user').username
+    projectpath = f'{root_dir}/{request.data["project"]}'
     dirpath = f'{projectpath}/{request.data["directoryname"]}'
     str = os.popen(f'mkdir {projectpath}')
     os.popen(f'mkdir {dirpath}')
@@ -64,20 +65,36 @@ def dir_delete(request):
 
 @api_view(['GET'])
 def doc_list(request):
-    docs = Doc.objects.all()
-
-    # document list, status
-    docs_list = []
+    projectname=request.data['project']
+    dirname=request.data['directory']
     
-    data = {"status": "success", "document_list": docs_list}
+    docs_list = []
+    if dirname == '/':
+        """may have directories"""
+        dirs = Dir.objects.filter(project=projectname)
+        docs_list = [directory.dirname for directory in dirs]
+    
+    docs = Doc.objects.filter(project=projectname)
+    for doc in docs:
+        if '/' not in doc.docpath:
+            docs_list.append(doc.docpath)
+
+    data = {"status": "success", "documentlist": docs_list}
     return Response(data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
 def doc_view(request):
-    docs = Doc.objects.all()
-    # content, status code
-    return Response()
+    filepath=request.data['filepath']
+    projectname=request.data['project']
+    doc = Doc.objects.filter(project=projectname, docpath=filepath)
+    
+    filepath = (f'{root_dir}/{projectname}/{filepath}')
+    file = open(filepath, "r")
+    content = file.read()
+    file.close()
+    data = {"status": "success", "content": content}
+    return Response(data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

@@ -7,8 +7,8 @@ from django.contrib.auth.models import AbstractDoc
 class Project(models.Model):
     # Fields
     id = models.AutoField(primary_key=True)
-    projectname = models.CharField(max_length=50)
-    department = models.CharField(max_length=50)
+    projectname = models.CharField(max_length=150)
+    department = models.CharField(max_length=150)
 
     # Metadata
     class Meta:
@@ -24,8 +24,8 @@ class Project(models.Model):
 
 class Dir(models.Model):
     id = models.AutoField(primary_key=True)
-    dirname = models.CharField(max_length=50)
-    project = models.ForeignKey('Project')
+    dirname = models.CharField(max_length=150)
+    project = models.CharField(max_length=150)
 
     # Metadata
     class Meta:
@@ -42,9 +42,9 @@ class Dir(models.Model):
 class Doc(models.Model):
     # Fields
     id = models.AutoField(primary_key=True)
-    docpath = models.CharField(max_length=100)
-    project = models.ForeignKey('Project')
-    owner = models.ForeignKey('User')
+    docpath = models.CharField(max_length=150)
+    project = models.CharField(max_length=150)
+    owner = models.CharField(max_length=150)
     public = models.BooleanField(default=False)
     private = models.BooleanField(default=False)
     # content = models.CharField(max_length=50000)
