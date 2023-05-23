@@ -1,6 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import AbstractDoc
-
 
 # Create your models here.
 
@@ -13,7 +11,7 @@ class Project(models.Model):
 
     # Metadata
     class Meta:
-        ordering = ['id', 'projectname', 'department']
+        # ordering = ['id', 'projectname', 'department']
         verbose_name = 'project'
         verbose_name_plural = 'projects'
         db_table = 'project'
@@ -31,7 +29,7 @@ class Dir(models.Model):
 
     # Metadata
     class Meta:
-        ordering = ['id', 'dirname', 'project']
+        # ordering = ['id', 'dirname', 'project']
         verbose_name = 'dir'
         verbose_name_plural = 'dirs'
         db_table = 'directory'
@@ -44,16 +42,17 @@ class Dir(models.Model):
 class Doc(models.Model):
     # Fields
     id = models.AutoField(primary_key=True)
-    docpath = models.CharField(max_length=150)
+    file = models.CharField(max_length=150)
+    directory = models.CharField(max_length=150)
     project = models.CharField(max_length=150)
     owner = models.CharField(max_length=150)
-    public = models.BooleanField(default=False)
-    private = models.BooleanField(default=False)
+    public = models.CharField(max_length=1)
+    private = models.CharField(max_length=1)
     # content = models.CharField(max_length=50000)
 
     # Metadata
     class Meta:
-        ordering = ['id', 'docname', 'directory', 'project', 'owner', 'public', 'private', 'content']
+        # ordering = ['id', 'docname', 'directory', 'project', 'owner', 'public', 'private', 'content']
         verbose_name = 'doc'
         verbose_name_plural = 'docs'
         db_table = 'document'
