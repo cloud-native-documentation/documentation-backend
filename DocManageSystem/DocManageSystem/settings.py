@@ -45,7 +45,7 @@ INSTALLED_APPS = [
 SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,
     'JWT_AUTH_HEADER_PREFIX': 'jwt',
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -61,7 +61,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    'JWT_EXPIRATION_DELTA': timedelta(minutes=30),
+    'JWT_EXPIRATION_DELTA': timedelta(days=1),
 }
 
 MIDDLEWARE = [
@@ -72,8 +72,8 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # 'usermanagement.usermanagemiddleware.JWTMiddleware',  # check token
-    # 'usermanagement.usermanagemiddleware.AddTokenMiddleware', # add token
+    'usermanagement.usermanagemiddleware.JWTMiddleware',  # check token
+    'usermanagement.usermanagemiddleware.AddTokenMiddleware', # add token
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
