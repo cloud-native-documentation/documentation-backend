@@ -60,3 +60,21 @@ class Doc(models.Model):
     # Methods
     def __str__(self):
         return self.docname
+
+
+class commit(models.Model):
+    id = models.AutoField(primary_key=True)
+    file = models.CharField(max_length=150)
+    directory = models.CharField(max_length=150)
+    project = models.CharField(max_length=150)
+    commit = models.CharField(max_length=150)
+
+    # Metadata
+    class Meta:
+        verbose_name = 'commit'
+        verbose_name_plural = 'commits'
+        db_table = 'commit'
+
+    # Methods
+    def __str__(self):
+        return self.commit
