@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Doc, Dir, Project
 import os
-root_dir = './files'
-os.system(f'mkdir {root_dir}')
+root_dir = './store/files'
+os.system(f'mkdir -p {root_dir}')
 
 @api_view(['POST'])
 def project_create(request):
