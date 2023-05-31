@@ -1,27 +1,31 @@
-# documentation-backend
-## Dependency
-Django==4.2.1  
-djangorestframework==3.14.0  
-django-cors-headers==3.14.0  
-djangorestframework-simplejwt==5.2.2  
-sqlite3  
-linux and macOS comes with sqlite3 database, if the operating system does not have sqlite3 installed please configure sqlite3 first
-## Setting up the development environment
+# DocManageSystem Backend Docker Image
 
-```shell
-$ python3 -m venv env
-$ source env/bin/activate
-$ pip install -r requirements.txt
-```
-## Deployment
+This Docker image allows you to run the DocManageSystem backend application in a containerized environment using Python 3.11 on Alpine Linux.
 
-Use the deployment script
-```shell
-sh deploy.sh
-```
-## Clear models and database
+## Prerequisites
 
-Use the following script
-```shell
-sh deleteData.sh
-```
+- Docker installed on your system
+
+## Usage
+
+1. Build the Docker image:
+   ```bash
+   docker build -t backend .
+   ```
+2. Run the Docker container:
+   ```bash
+   docker run \
+    --name backend \
+    --restart=always \
+    -v DocManageSystem_backend:/app/DocManageSystem/store \
+    -p 8000:8000 \
+    -d \
+    backend
+   ```
+3. Clear database and files
+    ```bash
+    docker exec backend ./deploy.sh delete
+    ```
+
+## Configuration
+The application can be configured using environment variables. You can provide your own .env file with the required settings. To get started, you can rename the provided .env.example file to .env and modify the values as needed.

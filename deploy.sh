@@ -1,7 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
 cd DocManageSystem
-python3 manage.py makemigrations documentmanagement
-python3 manage.py makemigrations usermanagement
-python3 manage.py migrate
-python3 manage.py runserver
+
+if [ "$1" = "delete" ]; then
+  rm -rf store/db/*
+  rm -rf store/files
+else
+  python3 manage.py migrate
+  python3 manage.py runserver 0.0.0.0:8000
+fi

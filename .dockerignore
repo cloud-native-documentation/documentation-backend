@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env
+LICENSE
+VERSION
+README.md
+Changelog.md
+Makefile
+docker-compose.yml
+Dockerfile
+**/files
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
