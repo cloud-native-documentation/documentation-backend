@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth import get_user_model 
+
+User = get_user_model()
 
 # Create your models here.
 
@@ -22,17 +25,16 @@ class Project(models.Model):
 
 
 class Dir(models.Model):
-    id = models.AutoField(primary_key=True)
-    dirname = models.CharField(max_length=150)
-    project = models.CharField(max_length=150)
-    owner = models.CharField(max_length=150)
+    dirname = models.CharField(max_length=256)
+    project = models.CharField(max_length=256)
+    owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     # Metadata
     class Meta:
-        # ordering = ['id', 'dirname', 'project']
         verbose_name = 'dir'
         verbose_name_plural = 'dirs'
         db_table = 'directory'
+        unique_together = ('dirname', 'project',)
 
     # Methods
     def __str__(self):
@@ -52,7 +54,6 @@ class Doc(models.Model):
 
     # Metadata
     class Meta:
-        # ordering = ['id', 'docname', 'directory', 'project', 'owner', 'public', 'private', 'content']
         verbose_name = 'doc'
         verbose_name_plural = 'docs'
         db_table = 'document'
