@@ -1,7 +1,14 @@
-from django.urls import path
+from rest_framework.routers import DefaultRouter
+
+from django.urls import path, include
 from .views import project_create, project_delete, project_list, dir_create, dir_delete, doc_list, doc_view, doc_create, doc_delete, doc_commit
+from .views import DirectoryViewSet
+
+router = DefaultRouter()
+router.register(r'directory', DirectoryViewSet, basename='directory')
 
 urlpatterns = [
+ path('', include(router.urls)),
  path('create_project', project_create), 
  path('delete_project', project_delete), 
  path('list_project', project_list), 

@@ -1,7 +1,12 @@
+from rest_framework import generics, viewsets, permissions, mixins
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Doc, Dir, Project
+from .serializers import DirSerializer
 import os
 root_dir = './store/files'
 os.system(f'mkdir -p {root_dir}')
@@ -61,61 +66,22 @@ def project_list(request):
 
 @api_view(['POST'])
 def dir_create(request):
-    projectname = request.data['project']
-    dirname = request.data['directory']
-    
-    if dirname == '':
-        data = {"status": "fail, directory cannot be empty"}
-        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-    if dirname == '/':
-        data = {"status": "fail, directory cannot be '/'"}
-        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-    
-    dir = Dir.objects.filter(project=projectname, dirname=dirname)
-    if len(dir) != 0:
-        data = {"status": "fail, already exist"}
-        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-    
-    projectpath = f'{root_dir}/{projectname}'
-    dirpath = f'{projectpath}/{dirname}'
-    
-    os.popen(f'mkdir {projectpath}')
-    os.popen(f'mkdir {dirpath}')
-    
-    user = request.META.get('user')
-    instance = Dir(
-            dirname=dirname,
-            project=projectname,
-            owner=user.username
-        )
-    instance.save()
-    
-    data = {"status": "success"}
-    return Response(data, status=status.HTTP_200_OK)
-
+    pass
 
 @api_view(['POST'])
 def dir_delete(request):
-    projectname = request.data['project']
-    dirname = request.data['directory']
-    
-    dir = Dir.objects.filter(project=projectname, dirname=dirname)
-    if len(dir) == 0:
-        data = {"status": "fail, no such directory"}
-        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-    
-    dir = dir[0]
-    
-    user = request.META.get('user')
-    if dir.owner != user.username:
-        data = {"status": "fail, you are not owner"}
-        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-    
-    dir.delete()
-    
-    data = {"status": "success"}
-    return Response(data, status=status.HTTP_200_OK)
+    pass
 
+class DirectoryViewSet(mixins.CreateModelMixin,
+                    mixins.DestroyModelMixin,
+                    viewsets.GenericViewSet):
+    queryset = Dir.objects.filter()
+    serializer_class = DirSerializer
+    permission_classes = (IsAuthenticated, )
+    def perform_destroy(self, instance):
+        if instance.owner != self.request.user:
+            raise PermissionDenied
+        super().perform_destroy(instance)
 
 @api_view(['GET'])
 def doc_list(request):
