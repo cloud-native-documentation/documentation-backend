@@ -7,9 +7,6 @@ root_dir = os.path.join(os.getcwd() + '/', './store/files')
 try:
     os.makedirs(root_dir)
 except OSError as e:
-    # if e.errno != errno.EEXIST:
-    #     raise   
-    # time.sleep might help here
     pass
 
 @api_view(['POST'])
@@ -21,7 +18,10 @@ def project_create(request):
         data = {"status": "fail, already exist"}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
-    os.makedirs(os.path.join(root_dir + '/', projectname))
+    try:
+        os.makedirs(os.path.join(root_dir + '/', projectname))
+    except OSError as e:
+        pass
     
     user = request.META.get('user')
     instance = Project(
@@ -83,9 +83,17 @@ def dir_create(request):
     
     projectpath = os.path.join(root_dir + '/', projectname)
     dirpath = os.path.join(projectpath + '/', dirname)
-    os.makedirs(projectpath)
-    os.makedirs(dirpath)
     
+    try:
+        os.makedirs(projectpath)
+    except OSError as e:
+        pass
+    
+    try:
+        os.makedirs(dirpath)
+    except OSError as e:
+        pass
+
     user = request.META.get('user')
     instance = Dir(
             dirname=dirname,
@@ -193,8 +201,14 @@ def doc_create(request):
     projectpath = os.path.join(root_dir + '/', projectname)
     dirpath = os.path.join(projectpath + '/', directory)
     filepath = os.path.join(dirpath + '/', filename)
-    os.makedirs(projectpath)
-    os.makedirs(dirpath)
+    try:
+        os.makedirs(projectpath)
+    except OSError as e:
+        pass
+    try:
+        os.makedirs(dirpath)
+    except OSError as e:
+        pass
     with open(filepath, 'w') as _:
         pass
     
