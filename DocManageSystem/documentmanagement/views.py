@@ -4,7 +4,13 @@ from rest_framework import status
 from .models import Doc, Dir, Project
 import os
 root_dir = os.path.join(os.getcwd() + '/', './store/files')
-os.makedirs(root_dir)
+try:
+    os.makedirs(root_dir)
+except OSError as e:
+    # if e.errno != errno.EEXIST:
+    #     raise   
+    # time.sleep might help here
+    pass
 
 @api_view(['POST'])
 def project_create(request):
