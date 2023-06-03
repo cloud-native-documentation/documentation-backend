@@ -19,7 +19,7 @@ def project_create(request):
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     try:
-        os.makedirs(os.path.join(root_dir + '/', projectname))
+        os.makedirs(os.path.join(root_dir, projectname))
     except OSError as e:
         pass
     
@@ -81,8 +81,8 @@ def dir_create(request):
         data = {"status": "fail, already exist"}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
-    projectpath = os.path.join(root_dir + '/', projectname)
-    dirpath = os.path.join(projectpath + '/', dirname)
+    projectpath = os.path.join(root_dir, projectname)
+    dirpath = os.path.join(projectpath, dirname)
     
     try:
         os.makedirs(projectpath)
@@ -198,9 +198,13 @@ def doc_create(request):
     filepath = f'{directorypath}/{filename}'
     print(filepath)
 
-    projectpath = os.path.join(root_dir + '/', projectname)
-    dirpath = os.path.join(projectpath + '/', directory)
-    filepath = os.path.join(dirpath + '/', filename)
+    projectpath = os.path.join(root_dir, projectname)
+    if directory != '/':
+        dirpath = os.path.join(projectpath, directory)
+    else:
+        dirpath = projectpath
+    filepath = os.path.join(dirpath, filename)
+    print(filepath)
     try:
         os.makedirs(projectpath)
     except OSError as e:
