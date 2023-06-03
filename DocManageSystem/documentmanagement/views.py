@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Doc, Dir, Project
 import os
-root_dir = './store/files'
-os.system(f'mkdir -p {root_dir}')
+root_dir = os.path.join(os.getcwd + '/', './store/files')
+os.makedirs(root_dir)
 
 @api_view(['POST'])
 def project_create(request):
@@ -15,8 +15,7 @@ def project_create(request):
         data = {"status": "fail, already exist"}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
-    projectpath = f'{root_dir}/{projectname}'
-    os.popen(f'mkdir {projectpath}')
+    os.makedirs(os.path.join(root_dir + '/', projectname))
     
     user = request.META.get('user')
     instance = Project(
@@ -76,11 +75,10 @@ def dir_create(request):
         data = {"status": "fail, already exist"}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
-    projectpath = f'{root_dir}/{projectname}'
-    dirpath = f'{projectpath}/{dirname}'
-    
-    os.popen(f'mkdir {projectpath}')
-    os.popen(f'mkdir {dirpath}')
+    projectpath = os.path.join(root_dir + '/', projectname)
+    dirpath = os.path.join(projectpath + '/', dirname)
+    os.makedirs(projectpath)
+    os.makedirs(dirpath)
     
     user = request.META.get('user')
     instance = Dir(
@@ -185,10 +183,14 @@ def doc_create(request):
     directorypath = f'{projectpath}/{directory}'
     filepath = f'{directorypath}/{filename}'
     print(filepath)
-    
-    os.popen(f'mkdir {projectpath}')
-    os.popen(f'mkdir {directorypath}')
-    os.popen(f'touch "{filepath}"')
+
+    projectpath = os.path.join(root_dir + '/', projectname)
+    dirpath = os.path.join(projectpath + '/', directory)
+    filepath = os.path.join(dirpath + '/', filename)
+    os.makedirs(projectpath)
+    os.makedirs(dirpath)
+    with open(filepath, 'w') as _:
+        pass
     
     user = request.META.get('user')
     instance = Doc(
