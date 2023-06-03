@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Doc, Dir, Project
 import os
-root_dir = os.path.join(os.getcwd + '/', './store/files')
+root_dir = os.path.join(os.getcwd() + '/', './store/files')
 os.makedirs(root_dir)
 
 @api_view(['POST'])
@@ -117,8 +117,8 @@ def dir_delete(request):
 
 @api_view(['GET'])
 def doc_list(request):
-    projectname=request.data['project']
-    dirname=request.data['directory']
+    projectname=request.GET['project']
+    dirname=request.GET['directory']
     
     docs_list = []
     if dirname == '/':
@@ -135,9 +135,9 @@ def doc_list(request):
 
 @api_view(['GET'])
 def doc_view(request):
-    filename=request.data['file']
-    directory=request.data['directory']
-    projectname=request.data['project']
+    filename=request.GET['file']
+    directory=request.GET['directory']
+    projectname=request.GET['project']
     
     doc = Doc.objects.filter(
         project=projectname, directory=directory, file=filename)
