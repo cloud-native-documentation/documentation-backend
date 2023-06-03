@@ -177,7 +177,7 @@ def doc_create(request):
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     dir = Dir.objects.filter(project=projectname, dirname=directory)
-    if len(dir) == 0:
+    if directory != '/' and len(dir) == 0:
         data = {"status": "fail, no such directory"}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
