@@ -36,7 +36,7 @@ def project_create(request):
         )
     instance.save()
     
-    action_save(projectname, None, None, None, user.username, 'create', 0, False)
+    # action_save(projectname, None, None, None, user.username, 'create', 0, False)
     
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
@@ -59,7 +59,7 @@ def project_delete(request):
         
     project.delete()
     
-    action_save(projectname, None, None, None, user.username, 'delete', 1, False)
+    # action_save(projectname, None, None, None, user.username, 'delete', 1, False)
     
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
@@ -125,7 +125,7 @@ def dir_create(request):
         )
     instance.save()
     
-    action_save(projectname, dirname, None, None, user.username, 'create', 0, False)
+    # action_save(projectname, dirname, None, None, user.username, 'create', 0, False)
     
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
@@ -150,7 +150,7 @@ def dir_delete(request):
     
     dir.delete()
     
-    action_save(projectname, dirname, None, None, user.username, 'delete', 1, False)
+    # action_save(projectname, dirname, None, None, user.username, 'delete', 1, False)
     
     
     data = {"status": "success"}
