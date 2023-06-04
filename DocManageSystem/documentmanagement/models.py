@@ -8,17 +8,7 @@ class Project(models.Model):
     projectname = models.CharField(max_length=150)
     department = models.CharField(max_length=150)
     owner = models.CharField(max_length=150)
-
-    # Metadata
-    class Meta:
-        # ordering = ['id', 'projectname', 'department']
-        verbose_name = 'project'
-        verbose_name_plural = 'projects'
-        db_table = 'project'
-
-    # Methods
-    def __str__(self):
-        return self.projectname
+    description = models.CharField(max_length=1500)
 
 
 class Dir(models.Model):
@@ -26,17 +16,6 @@ class Dir(models.Model):
     dirname = models.CharField(max_length=150)
     project = models.CharField(max_length=150)
     owner = models.CharField(max_length=150)
-
-    # Metadata
-    class Meta:
-        # ordering = ['id', 'dirname', 'project']
-        verbose_name = 'dir'
-        verbose_name_plural = 'dirs'
-        db_table = 'directory'
-
-    # Methods
-    def __str__(self):
-        return self.dirname
 
 
 class Doc(models.Model):
@@ -48,24 +27,15 @@ class Doc(models.Model):
     owner = models.CharField(max_length=150)
     public = models.CharField(max_length=1)
     private = models.CharField(max_length=1)
-    # content = models.CharField(max_length=50000)
+    cnt = models.IntegerField()
 
-    # Metadata
-    class Meta:
-        # ordering = ['id', 'docname', 'directory', 'project', 'owner', 'public', 'private', 'content']
-        verbose_name = 'doc'
-        verbose_name_plural = 'docs'
-        db_table = 'document'
-
-    # Methods
-    def __str__(self):
-        return self.docname
 
 class HistoryAction(models.Model):
     id = models.AutoField(primary_key=True)
     project = models.CharField(max_length=150)
     directory = models.CharField(max_length=150)
     file = models.CharField(max_length=150)
+    fileid = models.IntegerField()
     username = models.CharField(max_length=150)
     action = models.CharField(max_length=150)
     modify_date = models.DateTimeField(auto_now_add=True)

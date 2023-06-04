@@ -12,7 +12,10 @@ except OSError as e:
 @api_view(['POST'])
 def project_create(request):
     projectname=request.data['project']
+    description=request.data.get('description')
     project = Project.objects.filter(projectname=projectname)
+    if description == None:
+        description = ""
     
     if len(project) != 0:
         data = {"status": "fail, already exist"}
@@ -27,7 +30,8 @@ def project_create(request):
     instance = Project(
             projectname=projectname, 
             department=user.department,
-            owner=user.username
+            owner=user.username,
+            description=description
         )
     instance.save()
     
@@ -59,7 +63,9 @@ def project_delete(request):
 @api_view(['GET'])
 def project_list(request):
     projects = Project.objects.all()
-    project_list = [project.projectname for project in projects]
+    project_list = []
+    for project in projects:
+        project_list.append({'name': project.projectname, 'description': project.description})
     data = {"status": "success", "projectlist": project_list}
     return Response(data, status=status.HTTP_200_OK)
 
@@ -141,65 +147,96 @@ type ProjectFilesType = ProjectFileType[];
 
 """
 
+# @api_view(['GET'])
+# def doc_list(request):
+    
+#     def setname(item, dirname):
+#         item['name'] = dirname
+#         return item
+#     def setisFile(item, bo):
+#         item['isFile'] = bo
+#         return item
+#     def addchildren(item, doc):
+#         item['children'].append({'id': doc.id, 'name': doc.file})
+#         return item
+    
+#     projectname=request.GET['project']
+#     # dirname=request.GET['directory']
+    
+#     project = Project.objects.filter(projectname=projectname)
+#     if len(project) == 0:
+#         data = {"status": "fail, no such project"}
+#         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+    
+#     docs_list = []
+#     dirs = Dir.objects.filter(project=projectname)
+#     for directory in dirs:
+#         item = {'children': []}
+#         item = setname(item, directory.dirname)
+#         item = setisFile(item, False)
+        
+#         docs = Doc.objects.filter(project=projectname, directory=directory.dirname)
+#         for doc in docs:
+#             item = addchildren(item, doc)
+#         docs_list.append(item)
+
+    
+#     docs = Doc.objects.filter(project=projectname, directory='/')
+#     for doc in docs:
+#         item = {}
+#         item = setname(item, doc.file)
+#         item = setisFile(item, True)
+#         docs_list.append(item)
+
+#     data = {"status": "success", "documentlist": docs_list}
+#     return Response(data, status=status.HTTP_200_OK)
+
+
 @api_view(['GET'])
 def doc_list(request):
-    
-    def setname(item, dirname):
-        item['name'] = dirname
-        return item
-    def setisFile(item, bo):
-        item['isFile'] = bo
-        return item
-    def addchildren(item, docname):
-        item['children'].append({'name': docname})
-        return item
-    
-    projectname=request.GET['project']
-    # dirname=request.GET['directory']
-    
-    project = Project.objects.filter(projectname=projectname)
-    if len(project) == 0:
-        data = {"status": "fail, no such project"}
-        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+    projectname=request.data['project']
+    dirname=request.data.get('directory')
+    if dirname == None:
+        dirname = '/'
     
     docs_list = []
-    dirs = Dir.objects.filter(project=projectname)
-    for directory in dirs:
-        item = {'children': []}
-        item = setname(item, directory.dirname)
-        item = setisFile(item, False)
-        
-        docs = Doc.objects.filter(project=projectname, directory=directory.dirname)
-        for doc in docs:
-            item = addchildren(item, doc.file)
-        docs_list.append(item)
-
+    if dirname == '/':
+        dirs = Dir.objects.filter(project=projectname)
+        for dir in dirs:
+            docs_list.append({'name': dir.dirname, 'isFile': False, 'id': 0})
     
-    docs = Doc.objects.filter(project=projectname, directory='/')
+    docs = Doc.objects.filter(project=projectname, directory=dirname)
     for doc in docs:
-        item = {}
-        item = setname(item, doc.file)
-        item = setisFile(item, True)
-        docs_list.append(item)
-
+        docs_list.append({'name': doc.file, 'isFile': True, 'id': doc.id})
+    
     data = {"status": "success", "documentlist": docs_list}
     return Response(data, status=status.HTTP_200_OK)
-
+    
 
 @api_view(['GET'])
 def doc_view(request):
-    filename=request.GET['file']
-    directory=request.GET['directory']
-    projectname=request.GET['project']
     
-    doc = Doc.objects.filter(
-        project=projectname, directory=directory, file=filename)
+    id=request.GET['id']
+    doc = Doc.objects.filter(id=id)
     
     if len(doc) == 0:
         data = {"status": "fail, no such file"}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
-    filepath = (f'{root_dir}/{projectname}/{directory}/{filename}')
+    doc=doc[0]
+    filename=doc.file
+    directory=doc.directory
+    projectname=doc.project
+    version=request.GET.get('version')
+    
+    print(version)
+    if directory == None:
+        directory = '/'
+    
+    if version == None:
+        version = doc.cnt
+    
+    filepath = (f'{root_dir}/{projectname}/{directory}/{filename}__{version}')
     file = open(filepath, "r")
     content = file.read()
     file.close()
@@ -211,10 +248,12 @@ def doc_view(request):
 @api_view(['POST'])
 def doc_create(request):
     filename=request.data['file']
-    directory=request.data['directory']
     projectname=request.data['project']
     public=request.data['public']
     private=request.data['private']
+    directory=request.data.get('directory')
+    if directory == None:
+        directory = '/'
     
     doc = Doc.objects.filter(
         project=projectname, directory=directory, file=filename)
@@ -239,6 +278,7 @@ def doc_create(request):
         dirpath = projectpath
     filepath = os.path.join(dirpath, filename)
     print(filepath)
+    
     try:
         os.makedirs(projectpath)
     except OSError as e:
@@ -247,7 +287,7 @@ def doc_create(request):
         os.makedirs(dirpath)
     except OSError as e:
         pass
-    with open(filepath, 'w') as _:
+    with open(filepath + "__1", 'w') as _:
         pass
     
     user = request.META.get('user')
@@ -257,11 +297,16 @@ def doc_create(request):
             project=projectname,
             owner=user.username, 
             public=public,
-            private=private
+            private=private,
+            cnt=1
         )
     instance.save()
     
-    action_save(projectname, directory, filename, user.username, 'create')
+    doc = Doc.objects.filter(
+        project=projectname, directory=directory, file=filename)
+    doc = doc[0]
+    
+    action_save(projectname, directory, filename, doc.id, user.username, 'create', 1)
     
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
@@ -269,27 +314,32 @@ def doc_create(request):
 
 @api_view(['POST'])
 def doc_delete(request):
-    filename=request.data['file']
-    directory=request.data['directory']
-    projectname=request.data['project']
-    doc = Doc.objects.filter(
-        project=projectname, directory=directory, file=filename)
+    id=request.GET['id']
+    doc = Doc.objects.filter(id=id)
     
     if len(doc) == 0:
         data = {"status": "fail, no such file"}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-        
-    doc = doc[0]
+    
+    doc=doc[0]
+    filename=doc.file
+    directory=doc.directory
+    projectname=doc.project
+    
+    if directory == None:
+        directory = '/'
+    
     user = request.META.get('user')
     
     if doc.owner != user.username:
         data = {"status": "fail, you are not owner"}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         
-    doc.delete()
+    doc.cnt += 1
+    doc.save()
+    action_save(projectname, directory, filename, doc.id, user.username, 'delete', doc.cnt)
     
-    action_save(projectname, directory, filename, user.username, 'delete')
-    """ clear history"""
+    doc.delete()
     
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
@@ -297,17 +347,21 @@ def doc_delete(request):
 
 @api_view(['POST'])
 def doc_commit(request):
-    filename=request.data['file']
-    directory=request.data['directory']
-    projectname=request.data['project']
-    doc = Doc.objects.filter(
-        project=projectname, directory=directory, file=filename)
+    id=request.GET['id']
+    doc = Doc.objects.filter(id=id)
     
     if len(doc) == 0:
         data = {"status": "fail, no such file"}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-        
-    doc = doc[0]
+    
+    doc=doc[0]
+    filename=doc.file
+    directory=doc.directory
+    projectname=doc.project
+    
+    if directory == None:
+        directory = '/'
+    
     user = request.META.get('user')
     project = Project.objects.filter(projectname=projectname)
     project = project[0]
@@ -316,23 +370,26 @@ def doc_commit(request):
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
     content = request.data['content']
+    doc.cnt += 1
+    doc.save()
     
-    filepath = (f'{root_dir}/{projectname}/{directory}/{filename}')
+    filepath = (f'{root_dir}/{projectname}/{directory}/{filename}__{doc.cnt}')
     file = open(filepath, "w")
     file.write(content)
     file.close()
     
-    action_save(projectname, directory, filename, user.username, 'commit')
+    action_save(projectname, directory, filename, doc.id, user.username, 'commit', doc.cnt)
     
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
 
 
-def action_save(project, directory, file, user, action, version):
+def action_save(project, directory, file, fileid, user, action, version):
     action = HistoryAction(
         project=project,
         directory=directory,
         file=file,
+        fileid=fileid,
         username=user,
         action=action,
         version=version
@@ -341,15 +398,22 @@ def action_save(project, directory, file, user, action, version):
     
 @api_view(['POST'])
 def get_his_act(request):
-    filename = request.data.get('file')
-    directory = request.data.get('directory')
-    projectname = request.data.get('project')
-    histories = HistoryAction.objects.filter(
-        project=projectname, directory=directory, file=filename)
+    id = request.data.get('id')
+    # if id != None:
+    #     doc = Doc.objects.filter(id=id)
+    #     if len(doc) == 0:
+    #         data = {"status": "fail, no such file"}
+    #         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+    
+    if id == None:
+        histories = HistoryAction.objects.all()
+    else:
+        histories = HistoryAction.objects.filter(fileid=id)
+    
     action = []
     for his in histories:
         action.append(
-            {"type":his.action, "time":his.modify_date, "user":his.username, "version": his.version}) 
-    data = {"status": "success", "actions": action}
+            {"filename": his.file, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version}) 
 
+    data = {"status": "success", "actions": action}
     return Response(data=data, status=status.HTTP_200_OK)
