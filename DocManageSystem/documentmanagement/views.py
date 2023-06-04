@@ -444,9 +444,15 @@ def get_his_act(request):
         histories = HistoryAction.objects.filter(fileid=id)
     
     action = []
+    currentuser = request.META.get('user')
     for his in histories:
-        action.append(
-            {"filename": his.file, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version}) 
+        doc = Doc.objects.filter(id=his.fileid)[0]
+        department = User.objects.filter(username=doc.owner)[0].department
+        if doc.public == '1' or \
+            (doc.private == '0' and currentuser.department == department) or \
+            (doc.private == '1' and currentuser.username == doc.owner):
+            action.append(
+                {"filename": his.file, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version}) 
 
     data = {"status": "success", "actions": action}
     return Response(data=data, status=status.HTTP_200_OK)
