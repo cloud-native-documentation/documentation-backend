@@ -1,0 +1,11 @@
+18:39:19,687 | root [INFO] | test log
+18:39:20,114 | root [INFO] | test log
+18:39:20,536 | root [INFO] | test log
+18:39:21,30 | django.utils.autoreload [INFO] | Watching for file changes with StatReloader
+18:39:21,184 | root [INFO] | test log
+18:41:14,1 | django.utils.autoreload [INFO] | /home/roy/yys/documentation-backend-setup/DocManageSystem/documentmanagement/views.py changed, reloading.
+18:41:14,257 | django.utils.autoreload [INFO] | Watching for file changes with StatReloader
+18:41:14,411 | root [INFO] | test log
+18:42:38,809 | django.utils.autoreload [INFO] | /home/roy/yys/documentation-backend-setup/DocManageSystem/documentmanagement/views.py changed, reloading.
+18:42:39,95 | django.utils.autoreload [INFO] | Watching for file changes with StatReloader
+18:42:39,257 | root [INFO] | test log

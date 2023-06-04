@@ -154,3 +154,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+import logging
+logging.basicConfig(filename="./store/log.txt",
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)d | %(name)s [%(levelname)s] | %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.INFO)
