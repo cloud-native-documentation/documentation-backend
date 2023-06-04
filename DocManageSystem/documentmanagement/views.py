@@ -475,9 +475,9 @@ def get_his_act(request):
             if doc.public == '1' or \
                 (doc.private == '0' and currentuser.department == department) or \
                 (doc.private == '1' and currentuser.username == doc.owner):
-                action.append({"filename": his.file, 'isFile': his.isFile, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version})
+                action.append({"filename": his.file, 'isFile': his.isFile, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version, 'id': his.fileid})
         else:
-            action.append({"filename": his.file, 'isFile': his.isFile, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version})
+            action.append({"filename": his.file, 'isFile': his.isFile, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version, 'id': his.fileid})
             # dir = Dir.objects.filter(projectname=his.project, dirname=his.directory)
             # if len(dir) != 0:
             #     action.append({"filename": his.file, 'isFile': his.isFile, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version})
