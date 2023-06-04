@@ -128,20 +128,59 @@ def dir_delete(request):
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
 
+"""
+type ProjectFileType = {
+  name: string;
+  isFile: boolean;
+  children?: { name: string }[];
+};
+
+type ProjectFilesType = ProjectFileType[];
+
+[{name: string, isFile: boolean, children: [{name: string}, {name: string}]}...]
+
+"""
 
 @api_view(['GET'])
 def doc_list(request):
+    
+    def setname(item, dirname):
+        item['name'] = dirname
+        return item
+    def setisFile(item, bo):
+        item['isFile'] = bo
+        return item
+    def addchildren(item, docname):
+        item['children'].append({'name': docname})
+        return item
+    
     projectname=request.GET['project']
-    dirname=request.GET['directory']
+    # dirname=request.GET['directory']
+    
+    project = Project.objects.filter(projectname=projectname)
+    if len(project) == 0:
+        data = {"status": "fail, no such project"}
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     docs_list = []
-    if dirname == '/':
-        dirs = Dir.objects.filter(project=projectname)
-        docs_list = [directory.dirname for directory in dirs]
+    dirs = Dir.objects.filter(project=projectname)
+    for directory in dirs:
+        item = {'children': []}
+        item = setname(item, directory.dirname)
+        item = setisFile(item, False)
+        
+        docs = Doc.objects.filter(project=projectname, directory=directory.dirname)
+        for doc in docs:
+            item = addchildren(item, doc.file)
+        docs_list.append(item)
+
     
-    docs = Doc.objects.filter(project=projectname, directory=dirname)
+    docs = Doc.objects.filter(project=projectname, directory='/')
     for doc in docs:
-        docs_list.append(doc.file)
+        item = {}
+        item = setname(item, doc.file)
+        item = setisFile(item, True)
+        docs_list.append(item)
 
     data = {"status": "success", "documentlist": docs_list}
     return Response(data, status=status.HTTP_200_OK)
@@ -192,11 +231,6 @@ def doc_create(request):
     if directory != '/' and len(dir) == 0:
         data = {"status": "fail, no such directory"}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-    
-    projectpath = f'{root_dir}/{projectname}'
-    directorypath = f'{projectpath}/{directory}'
-    filepath = f'{directorypath}/{filename}'
-    print(filepath)
 
     projectpath = os.path.join(root_dir, projectname)
     if directory != '/':
