@@ -460,27 +460,30 @@ def action_save(project, directory, file, fileid, user, action, version, isFile)
 @api_view(['GET'])
 def get_his_act(request):
     id = request.GET.get('id')
-    # if id != None:
-    #     doc = Doc.objects.filter(id=id)
-    #     if len(doc) == 0:
-    #         data = {"status": "fail, no such file"}
-    #         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     if id == None:
         histories = HistoryAction.objects.all()
     else:
         histories = HistoryAction.objects.filter(fileid=id)
-    
     action = []
     currentuser = request.META.get('user')
     for his in histories:
-        doc = Doc.objects.filter(id=his.fileid)[0]        
-        department = User.objects.filter(username=doc.owner)[0].department
-        if doc.public == '1' or \
-            (doc.private == '0' and currentuser.department == department) or \
-            (doc.private == '1' and currentuser.username == doc.owner):
-            action.append(
-                {"filename": his.file, 'isFile': his.isFile, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version}) 
+        if his.isFile:
+            doc = Doc.objects.filter(id=his.fileid)
+            doc=doc[0]
+            department = User.objects.filter(username=doc.owner)[0].department
+            if doc.public == '1' or \
+                (doc.private == '0' and currentuser.department == department) or \
+                (doc.private == '1' and currentuser.username == doc.owner):
+                action.append({"filename": his.file, 'isFile': his.isFile, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version})
+        else:
+            action.append({"filename": his.file, 'isFile': his.isFile, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version})
+            # dir = Dir.objects.filter(projectname=his.project, dirname=his.directory)
+            # if len(dir) != 0:
+            #     action.append({"filename": his.file, 'isFile': his.isFile, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version})
+            # else:
+            #     project = Project.objects.filter(projectname=his.project)[0]
+            #     action.append({"filename": his.file, 'isFile': his.isFile, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version})
 
     data = {"status": "success", "actions": action}
     return Response(data=data, status=status.HTTP_200_OK)
