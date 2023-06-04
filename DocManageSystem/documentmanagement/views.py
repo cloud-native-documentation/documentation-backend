@@ -207,8 +207,17 @@ type ProjectFilesType = ProjectFileType[];
 
 @api_view(['GET'])
 def doc_list(request):
-    projectname=request.GET['project']
+    projectname=request.GET.get('project')
     dirname=request.GET.get('directory')
+    if projectname == None:
+        data = {"status": "fail, please provide project"}
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+    
+    project = Project.objects.filter(projectname=projectname)
+    if len(project) == 0:
+        data = {"status": "fail, no such project"}
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        
     if dirname == None:
         dirname = '/'
     
