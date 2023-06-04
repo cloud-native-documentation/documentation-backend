@@ -108,8 +108,15 @@ WSGI_APPLICATION = 'DocManageSystem.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'store' / 'db' / 'db.sqlite3',
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': BASE_DIR / 'store' / 'db' / 'db.sqlite3',
+        'NAME': 'mysql',
+        'HOST': 'mysql',
+        'PORT': '3306',
+        'USER': 'admin',
+        'PASSWORD': 'password',
+        
     }
 }
 AUTH_USER_MODEL = 'usermanagement.User'

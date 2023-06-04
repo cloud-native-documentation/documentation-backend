@@ -11,7 +11,7 @@ except OSError as e:
     pass
 
 import logging
-logging.basicConfig(filename="./log.txt",
+logging.basicConfig(filename="./store/log.txt",
                     filemode='a',
                     format='%(asctime)s,%(msecs)d | %(name)s [%(levelname)s] | %(message)s',
                     datefmt='%H:%M:%S',
