@@ -213,13 +213,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
     
 # }
 
-ADMINS = [('Roy', 'roylin506@gmail.com')]
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 25
-EMAIL_HOST_USER = 'roylin506'
-EMAIL_HOST_PASSWORD = 'fizunswkjngqvlns'
-# DEFAULT_FROM_EMAIL = 'yyds@jcomp.tk'
+ADMINS = [i.split('|') for i in os.environ.get('ADMIN_LIST', '').split(',')]
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', '')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
 LOGGING = {
     'version': 1,
