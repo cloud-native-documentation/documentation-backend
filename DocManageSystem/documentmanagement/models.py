@@ -60,3 +60,13 @@ class Doc(models.Model):
     # Methods
     def __str__(self):
         return self.docname
+
+class HistoryAction(models.Model):
+    id = models.AutoField(primary_key=True)
+    project = models.CharField(max_length=150)
+    directory = models.CharField(max_length=150)
+    file = models.CharField(max_length=150)
+    username = models.CharField(max_length=150)
+    action = models.CharField(max_length=150)
+    modify_date = models.DateTimeField(auto_now_add=True)
+    version = models.IntegerField()

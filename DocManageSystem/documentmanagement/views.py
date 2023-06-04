@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Doc, Dir, Project
+from .models import Doc, Dir, Project, HistoryAction
 import os
 root_dir = os.path.join(os.getcwd() + '/', './store/files')
 try:
@@ -261,6 +261,8 @@ def doc_create(request):
         )
     instance.save()
     
+    action_save(projectname, directory, filename, user.username, 'create')
+    
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
 
@@ -285,6 +287,9 @@ def doc_delete(request):
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         
     doc.delete()
+    
+    action_save(projectname, directory, filename, user.username, 'delete')
+    """ clear history"""
     
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
@@ -317,5 +322,34 @@ def doc_commit(request):
     file.write(content)
     file.close()
     
+    action_save(projectname, directory, filename, user.username, 'commit')
+    
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
+
+
+def action_save(project, directory, file, user, action, version):
+    action = HistoryAction(
+        project=project,
+        directory=directory,
+        file=file,
+        username=user,
+        action=action,
+        version=version
+    )
+    action.save()
+    
+@api_view(['POST'])
+def get_his_act(request):
+    filename = request.data.get('file')
+    directory = request.data.get('directory')
+    projectname = request.data.get('project')
+    histories = HistoryAction.objects.filter(
+        project=projectname, directory=directory, file=filename)
+    action = []
+    for his in histories:
+        action.append(
+            {"type":his.action, "time":his.modify_date, "user":his.username, "version": his.version}) 
+    data = {"status": "success", "actions": action}
+
+    return Response(data=data, status=status.HTTP_200_OK)
