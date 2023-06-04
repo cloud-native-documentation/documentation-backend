@@ -10,6 +10,19 @@ try:
 except OSError as e:
     pass
 
+import logging
+logging.basicConfig(filename="./log.txt",
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)d | %(name)s [%(levelname)s] | %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.INFO)
+
+
+def log(message):
+    logging.info(message)
+    
+log('test log')
+
 @api_view(['POST'])
 def project_create(request):
     projectname=request.data['project']
