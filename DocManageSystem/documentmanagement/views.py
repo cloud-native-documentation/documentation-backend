@@ -280,7 +280,7 @@ def doc_list(request):
 @api_view(['GET'])
 def doc_view(request):
     id=request.GET['id']
-    doc = Doc.objects.filter(id=id, isDelete=False)
+    doc = Doc.objects.filter(id=id)
     
     # if len(doc) == 0:
     #     data = {"status": "fail, no such file"}
