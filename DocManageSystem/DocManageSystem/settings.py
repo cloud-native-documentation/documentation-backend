@@ -155,9 +155,105 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-import logging
-logging.basicConfig(filename="./store/log.txt",
-                    filemode='a',
-                    format='%(asctime)s,%(msecs)d | %(name)s [%(levelname)s] | %(message)s',
-                    datefmt='%H:%M:%S',
-                    level=logging.INFO)
+# import logging
+# logging.basicConfig(filename="./store/log.txt",
+#                     filemode='a',
+#                     format='%(asctime)s,%(msecs)d | %(name)s [%(levelname)s] | %(message)s',
+#                     datefmt='%H:%M:%S',
+#                     level=logging.INFO)
+
+# LOGGING={
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "filters": {
+#         "require_debug_false": {
+#             "()": "django.utils.log.RequireDebugFalse",
+#         },
+#         "require_debug_true": {
+#             "()": "django.utils.log.RequireDebugTrue",
+#         },
+#     },
+#     "formatters": {
+#         "django.server": {
+#             "()": "django.utils.log.ServerFormatter",
+#             "format": "[{server_time}] {message}",
+#             "style": "{",
+#         }
+#     },
+#     "handlers": {
+#         "file": {
+#             "level": "INFO",
+#             "filters": ["require_debug_true"],
+#             "class": "logging.FileHandler",
+#             'filename': './store/log.txt',
+#         },
+#         "django.server": {
+#             "level": "INFO",
+#             "class": "logging.StreamHandler",
+#             "formatter": "django.server",
+#         },
+#         "mail_admins": {
+#             "level": "ERROR",
+#             "filters": ["require_debug_false"],
+#             "class": "django.utils.log.AdminEmailHandler",
+#         },
+#     },
+#     "loggers": {
+#         "django": {
+#             "handlers": ["file", "mail_admins"],
+#             "level": "INFO",
+#             'propagate': True,
+#         },
+#         "django.server": {
+#             "handlers": ["django.server"],
+#             "level": "INFO",
+#             "propagate": True,
+#         },
+#     },
+    
+# }
+
+ADMINS = [('Roy', 'roylin506@gmail.com')]
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'roylin506'
+EMAIL_HOST_PASSWORD = 'fizunswkjngqvlns'
+# DEFAULT_FROM_EMAIL = 'yyds@jcomp.tk'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    "formatters": {
+        "django.server": {
+            "()": "django.utils.log.ServerFormatter",
+            "format": "[{server_time}] {message}",
+            "style": "{",
+        }
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': './store/log.txt',
+            'formatter': 'django.server',
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            # "filters": ["special"],
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}

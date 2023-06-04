@@ -13,9 +13,12 @@ except OSError as e:
 import logging
 
 def log(message):
-    logging.info(message)  
+    # logging.info(message)  
+    logger = logging.getLogger('django')
+    logger.info(message)
+    # print(logger.a)
     
-log('test log')
+# log('hello')
 
 @api_view(['POST'])
 def project_create(request):
@@ -27,6 +30,7 @@ def project_create(request):
     
     if len(project) != 0:
         data = {"status": "fail, already exist"}
+        log('create project ' + data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     try:
@@ -46,6 +50,7 @@ def project_create(request):
     action_save(projectname, None, None, None, user.username, 'create', 0, False)
     
     data = {"status": "success"}
+    log('create project ' + data["status"])
     return Response(data, status=status.HTTP_200_OK)
 
 
@@ -56,12 +61,14 @@ def project_delete(request):
     
     if len(project) == 0:
         data = {"status": "fail, no such project"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
        
     project=project[0] 
     user = request.META.get('user')
     if project.owner != user.username:
         data = {"status": "fail, you are not owner"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         
     project.delete()
@@ -69,6 +76,7 @@ def project_delete(request):
     action_save(projectname, None, None, None, user.username, 'delete', 1, False)
     
     data = {"status": "success"}
+    log(data["status"])
     return Response(data, status=status.HTTP_200_OK)
 
 
@@ -91,6 +99,7 @@ def project_list(request):
             project_list.append({'name': project.projectname, 'description': project.description})
 
     data = {"status": "success", "projectlist": project_list}
+    log(data["status"])
     return Response(data, status=status.HTTP_200_OK)
 
 
@@ -101,14 +110,17 @@ def dir_create(request):
     
     if dirname == '':
         data = {"status": "fail, directory cannot be empty"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     if dirname == '/':
         data = {"status": "fail, directory cannot be '/'"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     dir = Dir.objects.filter(project=projectname, dirname=dirname)
     if len(dir) != 0:
         data = {"status": "fail, already exist"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     projectpath = os.path.join(root_dir, projectname)
@@ -135,6 +147,7 @@ def dir_create(request):
     action_save(projectname, dirname, None, None, user.username, 'create', 0, False)
     
     data = {"status": "success"}
+    log(data["status"])
     return Response(data, status=status.HTTP_200_OK)
 
 
@@ -146,6 +159,7 @@ def dir_delete(request):
     dir = Dir.objects.filter(project=projectname, dirname=dirname)
     if len(dir) == 0:
         data = {"status": "fail, no such directory"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     dir = dir[0]
@@ -153,6 +167,7 @@ def dir_delete(request):
     user = request.META.get('user')
     if dir.owner != user.username:
         data = {"status": "fail, you are not owner"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     dir.delete()
@@ -161,6 +176,7 @@ def dir_delete(request):
     
     
     data = {"status": "success"}
+    log(data["status"])
     return Response(data, status=status.HTTP_200_OK)
 
 """
@@ -195,6 +211,7 @@ type ProjectFilesType = ProjectFileType[];
 #     project = Project.objects.filter(projectname=projectname)
 #     if len(project) == 0:
 #         data = {"status": "fail, no such project"}
+# log(data["status"])
 #         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
 #     docs_list = []
@@ -218,6 +235,7 @@ type ProjectFilesType = ProjectFileType[];
 #         docs_list.append(item)
 
 #     data = {"status": "success", "documentlist": docs_list}
+# log(data["status"])
 #     return Response(data, status=status.HTTP_200_OK)
 
 
@@ -227,11 +245,13 @@ def doc_list(request):
     dirname=request.GET.get('directory')
     if projectname == None:
         data = {"status": "fail, please provide project"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     project = Project.objects.filter(projectname=projectname)
     if len(project) == 0:
         data = {"status": "fail, no such project"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         
     if dirname == None:
@@ -253,6 +273,7 @@ def doc_list(request):
             docs_list.append({'name': doc.file, 'isFile': True, 'id': doc.id})
     
     data = {"status": "success", "documentlist": docs_list}
+    log(data["status"])
     return Response(data, status=status.HTTP_200_OK)
     
 
@@ -263,6 +284,7 @@ def doc_view(request):
     
     if len(doc) == 0:
         data = {"status": "fail, no such file"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     doc=doc[0]
@@ -282,6 +304,7 @@ def doc_view(request):
     if (doc.private == '1' and doc.owner != user.username) or \
         (doc.public == '0' and project.department != user.department):
         data = {"status": "fail, permission denied"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     filepath = (f'{root_dir}/{projectname}/{directory}/{filename}__{version}')
@@ -290,6 +313,7 @@ def doc_view(request):
     file.close()
     
     data = {"status": "success", "content": content}
+    log(data["status"])
     return Response(data, status=status.HTTP_200_OK)
 
 
@@ -309,21 +333,25 @@ def doc_create(request):
         project=projectname, directory=directory, file=filename, isDelete=False)
     if len(doc) != 0:
         data = {"status": "fail, file exist"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     project = Project.objects.filter(projectname=projectname)
     if len(project) == 0:
         data = {"status": "fail, no such project"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     if user.department != project[0].department:
         data = {"status": "fail, you are not in the same department"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     
     dir = Dir.objects.filter(project=projectname, dirname=directory)
     if directory != '/' and len(dir) == 0:
         data = {"status": "fail, no such directory"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
     projectpath = os.path.join(root_dir, projectname)
@@ -365,6 +393,7 @@ def doc_create(request):
     action_save(projectname, directory, filename, doc.id, user.username, 'create', 1, True)
     
     data = {"status": "success"}
+    log(data["status"])
     return Response(data, status=status.HTTP_200_OK)
 
 
@@ -375,6 +404,7 @@ def doc_delete(request):
     
     if len(doc) == 0:
         data = {"status": "fail, no such file"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     doc=doc[0]
@@ -389,6 +419,7 @@ def doc_delete(request):
     
     if doc.owner != user.username:
         data = {"status": "fail, you are not owner"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         
     doc.cnt += 1
@@ -399,6 +430,7 @@ def doc_delete(request):
     # doc.delete()
     
     data = {"status": "success"}
+    log(data["status"])
     return Response(data, status=status.HTTP_200_OK)
 
 
@@ -409,6 +441,7 @@ def doc_commit(request):
     
     if len(doc) == 0:
         data = {"status": "fail, no such file"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     doc=doc[0]
@@ -425,6 +458,7 @@ def doc_commit(request):
     if (doc.private == '1' and doc.owner != user.username) or \
         (doc.public == '0' and project.department != user.department):
         data = {"status": "fail, permission denied"}
+        log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
     content = request.data['content']
@@ -439,6 +473,7 @@ def doc_commit(request):
     action_save(projectname, directory, filename, doc.id, user.username, 'commit', doc.cnt, True)
     
     data = {"status": "success"}
+    log(data["status"])
     return Response(data, status=status.HTTP_200_OK)
 
 
@@ -493,4 +528,5 @@ def get_his_act(request):
             #     action.append({"filename": his.file, 'isFile': his.isFile, "type":his.action, "time":his.modify_date, "user":his.username, "version": his.version})
 
     data = {"status": "success", "actions": action}
+    log(data["status"])
     return Response(data=data, status=status.HTTP_200_OK)

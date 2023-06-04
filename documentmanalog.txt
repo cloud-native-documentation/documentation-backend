@@ -1,2 +1,0 @@
-18:37:35,806 | django.utils.autoreload [INFO] | Watching for file changes with StatReloader
-18:37:38,29 | django.utils.autoreload [INFO] | /home/roy/yys/documentation-backend-setup/DocManageSystem/DocManageSystem/settings.py changed, reloading.
