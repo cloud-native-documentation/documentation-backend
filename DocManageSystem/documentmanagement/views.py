@@ -36,6 +36,8 @@ def project_create(request):
         )
     instance.save()
     
+    action_save(projectname, None, None, None, user.username, 'create', 0, False)
+    
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
 
@@ -56,6 +58,8 @@ def project_delete(request):
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         
     project.delete()
+    
+    action_save(projectname, None, None, None, user.username, 'delete', 1, False)
     
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
@@ -121,6 +125,8 @@ def dir_create(request):
         )
     instance.save()
     
+    action_save(projectname, dirname, None, None, user.username, 'create', 0, False)
+    
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
 
@@ -143,6 +149,9 @@ def dir_delete(request):
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     dir.delete()
+    
+    action_save(projectname, dirname, None, None, user.username, 'delete', 1, False)
+    
     
     data = {"status": "success"}
     return Response(data, status=status.HTTP_200_OK)
@@ -427,7 +436,12 @@ def doc_commit(request):
 
 
 def action_save(project, directory, file, fileid, user, action, version, isFile):
-    filename = f'{project}/{directory}{file}'
+    if directory == None and file == None:
+        filename = project
+    elif file == None:
+        filename = f'{project}/{directory}'
+    else:
+        filename = f'{project}/{directory}{file}'
     action = HistoryAction(
         project=project,
         directory=directory,
@@ -440,9 +454,9 @@ def action_save(project, directory, file, fileid, user, action, version, isFile)
     )
     action.save()
     
-@api_view(['POST'])
+@api_view(['GET'])
 def get_his_act(request):
-    id = request.data.get('id')
+    id = request.GET.get('id')
     # if id != None:
     #     doc = Doc.objects.filter(id=id)
     #     if len(doc) == 0:
