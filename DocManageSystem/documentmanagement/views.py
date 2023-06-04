@@ -311,7 +311,7 @@ def doc_commit(request):
     user = request.META.get('user')
     project = Project.objects.filter(projectname=projectname)
     project = project[0]
-    if doc.private == '1' or (doc.public == '0' and project.department != user.department):
+    if (doc.private == '1' and doc.owner != user.username) or (doc.public == '0' and project.department != user.department):
         data = {"status": "fail, permission denied"}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
