@@ -78,7 +78,7 @@ def project_list(request):
         
         if show:
             project_list.append({'name': project.projectname, 'description': project.description})
-    
+
     data = {"status": "success", "projectlist": project_list}
     return Response(data, status=status.HTTP_200_OK)
 
@@ -207,8 +207,8 @@ type ProjectFilesType = ProjectFileType[];
 
 @api_view(['GET'])
 def doc_list(request):
-    projectname=request.data['project']
-    dirname=request.data.get('directory')
+    projectname=request.GET['project']
+    dirname=request.GET.get('directory')
     if dirname == None:
         dirname = '/'
     
