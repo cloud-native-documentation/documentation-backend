@@ -35,9 +35,9 @@ class Doc(models.Model):
 class HistoryAction(models.Model):
     id = models.AutoField(primary_key=True)
     project = models.CharField(max_length=150)
-    directory = models.CharField(max_length=150)
-    file = models.CharField(max_length=150)
-    fileid = models.IntegerField()
+    directory = models.CharField(max_length=150, null=True)
+    file = models.CharField(max_length=150, null=True)
+    fileid = models.IntegerField(null=True)
     username = models.CharField(max_length=150)
     action = models.CharField(max_length=150)
     modify_date = models.DateTimeField(auto_now_add=True)
