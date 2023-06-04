@@ -134,7 +134,5 @@ cython_debug/
 
 DocManageSystem/base.yml
 
-**/migrations
-**/files
 */store/*
 *.local
