@@ -1,4 +1,0 @@
-[04/Jun/2023 20:32:36,088] create project fail, already exist
-[04/Jun/2023 20:32:36] [31;1m"POST /document/create_project HTTP/1.1" 400 32[0m
-[04/Jun/2023 20:33:06,167] /home/roy/yys/documentation-backend-setup/DocManageSystem/documentmanagement/views.py changed, reloading.
-[04/Jun/2023 20:33:06,456] Watching for file changes with StatReloader
