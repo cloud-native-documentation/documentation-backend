@@ -282,10 +282,10 @@ def doc_view(request):
     id=request.GET['id']
     doc = Doc.objects.filter(id=id, isDelete=False)
     
-    if len(doc) == 0:
-        data = {"status": "fail, no such file"}
-        log(data["status"])
-        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+    # if len(doc) == 0:
+    #     data = {"status": "fail, no such file"}
+    #     log(data["status"])
+    #     return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     doc=doc[0]
     filename=doc.file
