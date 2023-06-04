@@ -441,7 +441,10 @@ def action_save(project, directory, file, fileid, user, action, version, isFile)
     elif file == None:
         filename = f'{project}/{directory}'
     else:
-        filename = f'{project}/{directory}{file}'
+        if directory == '/':
+            filename = f'{project}/{file}'
+        else:
+            filename = f'{project}/{directory}{file}'
     action = HistoryAction(
         project=project,
         directory=directory,
