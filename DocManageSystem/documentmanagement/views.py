@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Doc, Dir, Project, HistoryAction
+from usermanagement.models import User
 import os
 root_dir = os.path.join(os.getcwd() + '/', './store/files')
 try:
@@ -63,9 +64,21 @@ def project_delete(request):
 @api_view(['GET'])
 def project_list(request):
     projects = Project.objects.all()
+    
     project_list = []
     for project in projects:
-        project_list.append({'name': project.projectname, 'description': project.description})
+        show = False
+        if project.department == request.META.get('user').department:
+            show = True
+        else:
+            docs = Doc.objects.filter(project=project.projectname)
+            for doc in docs:
+                if doc.public == '1':
+                    show = True
+        
+        if show:
+            project_list.append({'name': project.projectname, 'description': project.description})
+    
     data = {"status": "success", "projectlist": project_list}
     return Response(data, status=status.HTTP_200_OK)
 
@@ -207,7 +220,12 @@ def doc_list(request):
     
     docs = Doc.objects.filter(project=projectname, directory=dirname)
     for doc in docs:
-        docs_list.append({'name': doc.file, 'isFile': True, 'id': doc.id})
+        owner = doc.owner
+        department = User.objects.filter(username=owner)[0].department
+        if owner == request.META.get('user').username or \
+            (doc.private == '0' and department == request.META.get('user').department) or \
+            doc.public == '1':
+            docs_list.append({'name': doc.file, 'isFile': True, 'id': doc.id})
     
     data = {"status": "success", "documentlist": docs_list}
     return Response(data, status=status.HTTP_200_OK)
@@ -215,7 +233,6 @@ def doc_list(request):
 
 @api_view(['GET'])
 def doc_view(request):
-    
     id=request.GET['id']
     doc = Doc.objects.filter(id=id)
     
@@ -229,12 +246,18 @@ def doc_view(request):
     projectname=doc.project
     version=request.GET.get('version')
     
-    print(version)
     if directory == None:
         directory = '/'
-    
     if version == None:
         version = doc.cnt
+    
+    user = request.META.get('user')
+    project = Project.objects.filter(projectname=projectname)
+    project = project[0]
+    if (doc.private == '1' and doc.owner != user.username) or \
+        (doc.public == '0' and project.department != user.department):
+        data = {"status": "fail, permission denied"}
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     filepath = (f'{root_dir}/{projectname}/{directory}/{filename}__{version}')
     file = open(filepath, "r")
@@ -314,7 +337,7 @@ def doc_create(request):
 
 @api_view(['POST'])
 def doc_delete(request):
-    id=request.GET['id']
+    id=request.data['id']
     doc = Doc.objects.filter(id=id)
     
     if len(doc) == 0:
@@ -347,7 +370,7 @@ def doc_delete(request):
 
 @api_view(['POST'])
 def doc_commit(request):
-    id=request.GET['id']
+    id=request.data['id']
     doc = Doc.objects.filter(id=id)
     
     if len(doc) == 0:
@@ -365,7 +388,8 @@ def doc_commit(request):
     user = request.META.get('user')
     project = Project.objects.filter(projectname=projectname)
     project = project[0]
-    if (doc.private == '1' and doc.owner != user.username) or (doc.public == '0' and project.department != user.department):
+    if (doc.private == '1' and doc.owner != user.username) or \
+        (doc.public == '0' and project.department != user.department):
         data = {"status": "fail, permission denied"}
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
