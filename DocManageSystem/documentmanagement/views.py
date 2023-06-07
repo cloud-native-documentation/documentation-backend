@@ -269,10 +269,15 @@ def doc_list(request):
         dirname = '/'
     
     docs_list = []
+    department = project[0].department
+    user = request.META.get('user')
     if dirname == '/':
         dirs = Dir.objects.filter(project=projectname)
         for dir in dirs:
-            docs_list.append({'name': dir.dirname, 'isFile': False, 'id': 0})
+            docs = Doc.objects.filter(project=projectname, directory=dir.dirname, isDelete=False, public='1')
+            
+            if department == user.department or len(docs) != 0:
+                docs_list.append({'name': dir.dirname, 'isFile': False, 'id': 0})
     
     docs = Doc.objects.filter(project=projectname, directory=dirname, isDelete=False)
     for doc in docs:
