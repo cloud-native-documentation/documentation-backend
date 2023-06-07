@@ -8,6 +8,12 @@ from django.conf import settings
 
 User = get_user_model()
 
+exlude_path = ['/user/login', '/user/register', '/user/logout', '/user/refresh', 'admin']
+def should_exclude(path):
+    for p in exlude_path:
+        if p in path:
+            return True
+    return False
 
 class JWTMiddleware:
     """
@@ -18,7 +24,7 @@ class JWTMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path in ['/user/login', '/user/register']:
+        if should_exclude(request.path):
             return self.get_response(request)
 
         authorization = request.META.get('HTTP_AUTHORIZATION')
@@ -41,7 +47,7 @@ class AddTokenMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path in ['/user/logout', '/user/register', '/user/login']:
+        if should_exclude(request.path):
             return self.get_response(request)
 
         response = self.get_response(request)

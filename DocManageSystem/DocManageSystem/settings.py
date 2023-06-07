@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 ]
 
 SIMPLE_JWT = {
-    'SIGNING_KEY': SECRET_KEY,
+    'SIGNING_KEY':  os.environ.get('JWT_SIGNING_KEY', SECRET_KEY),
     'JWT_AUTH_HEADER_PREFIX': 'jwt',
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
@@ -108,15 +108,12 @@ WSGI_APPLICATION = 'DocManageSystem.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
         'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': BASE_DIR / 'store' / 'db' / 'db.sqlite3',
-        'NAME': 'mysql',
-        'HOST': 'mysql',
-        'PORT': '3306',
-        'USER': 'admin',
-        'PASSWORD': 'password',
-        
+        'HOST': os.environ.get('MYSQL_HOST', 'localhost'),
+        'PORT': os.environ.get('MYSQL_PORT', '3306'),
+        'USER': os.environ.get('MYSQL_USER', 'admin'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD', 'admin'),
+        'NAME': os.environ.get('MYSQL_DATABASE', 'docSystem')
     }
 }
 AUTH_USER_MODEL = 'usermanagement.User'
@@ -143,9 +140,9 @@ AUTH_USER_MODEL = 'usermanagement.User'
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = os.environ.get('DJANGO_LANGUAGE_CODE', 'en-us')
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.environ.get('DJANGO_TIME_ZONE', 'UTC')
 
 USE_I18N = True
 
@@ -156,76 +153,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# import logging
-# logging.basicConfig(filename="./store/log.txt",
-#                     filemode='a',
-#                     format='%(asctime)s,%(msecs)d | %(name)s [%(levelname)s] | %(message)s',
-#                     datefmt='%H:%M:%S',
-#                     level=logging.INFO)
-
-# LOGGING={
-#     "version": 1,
-#     "disable_existing_loggers": False,
-#     "filters": {
-#         "require_debug_false": {
-#             "()": "django.utils.log.RequireDebugFalse",
-#         },
-#         "require_debug_true": {
-#             "()": "django.utils.log.RequireDebugTrue",
-#         },
-#     },
-#     "formatters": {
-#         "django.server": {
-#             "()": "django.utils.log.ServerFormatter",
-#             "format": "[{server_time}] {message}",
-#             "style": "{",
-#         }
-#     },
-#     "handlers": {
-#         "file": {
-#             "level": "INFO",
-#             "filters": ["require_debug_true"],
-#             "class": "logging.FileHandler",
-#             'filename': './store/log.txt',
-#         },
-#         "django.server": {
-#             "level": "INFO",
-#             "class": "logging.StreamHandler",
-#             "formatter": "django.server",
-#         },
-#         "mail_admins": {
-#             "level": "ERROR",
-#             "filters": ["require_debug_false"],
-#             "class": "django.utils.log.AdminEmailHandler",
-#         },
-#     },
-#     "loggers": {
-#         "django": {
-#             "handlers": ["file", "mail_admins"],
-#             "level": "INFO",
-#             'propagate': True,
-#         },
-#         "django.server": {
-#             "handlers": ["django.server"],
-#             "level": "INFO",
-#             "propagate": True,
-#         },
-#     },
-    
-# }
-
-ADMINS = [i.split('|') for i in os.environ.get('ADMIN_LIST', '').split(',')]
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '')
-EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
-EMAIL_PORT = os.environ.get('EMAIL_PORT', '')
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+if os.environ.get('DJANGO_MAILING', 'False').lower() in ('t', 'true', 'y', 'yes', '1'):
+    ADMINS = [i.split('|') for i in os.environ.get('ADMIN_LIST', '').split(',')]
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '')
+    EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+    EMAIL_PORT = os.environ.get('EMAIL_PORT', '')
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
 LOGGING = {
     'version': 1,
@@ -263,3 +204,5 @@ LOGGING = {
         },
     },
 }
+
+FORCE_SCRIPT_NAME = '/api'

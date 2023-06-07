@@ -73,3 +73,15 @@ def user_list(request):
         users_list.append(info)
         data = {"status": "success", "userlist": users_list}
     return Response(data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def user_me(request):
+    """
+    user me
+    @param request:
+    @return:
+    """
+    user = request.META.get('user')
+    serializer = CustomUserSerializer(user)
+    data = {"status": "success", "user": serializer.data}
+    return Response(data, status=status.HTTP_200_OK)
