@@ -108,6 +108,18 @@ def dir_create(request):
     projectname = request.data['project']
     dirname = request.data['directory']
     
+    user = request.META.get('user')
+    project = Project.objects.filter(projectname=projectname)
+    if len(project) == 0:
+        data = {"status": "fail, no such project"}
+        log(data["status"])
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+    
+    if user.department != project[0].department:
+        data = {"status": "fail, you are not in the same department"}
+        log(data["status"])
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+    
     if dirname == '':
         data = {"status": "fail, directory cannot be empty"}
         log(data["status"])
@@ -119,7 +131,7 @@ def dir_create(request):
     
     dir = Dir.objects.filter(project=projectname, dirname=dirname)
     if len(dir) != 0:
-        data = {"status": "fail, already exist"}
+        data = {"status": "fail, directory exist"}
         log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
@@ -136,7 +148,6 @@ def dir_create(request):
     except OSError as e:
         pass
 
-    user = request.META.get('user')
     instance = Dir(
             dirname=dirname,
             project=projectname,
@@ -329,13 +340,6 @@ def doc_create(request):
     
     user = request.META.get('user')
     
-    doc = Doc.objects.filter(
-        project=projectname, directory=directory, file=filename, isDelete=False)
-    if len(doc) != 0:
-        data = {"status": "fail, file exist"}
-        log(data["status"])
-        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-    
     project = Project.objects.filter(projectname=projectname)
     if len(project) == 0:
         data = {"status": "fail, no such project"}
@@ -347,6 +351,12 @@ def doc_create(request):
         log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
+    doc = Doc.objects.filter(
+        project=projectname, directory=directory, file=filename, isDelete=False)
+    if len(doc) != 0:
+        data = {"status": "fail, file exist"}
+        log(data["status"])
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     
     dir = Dir.objects.filter(project=projectname, dirname=directory)
     if directory != '/' and len(dir) == 0:
