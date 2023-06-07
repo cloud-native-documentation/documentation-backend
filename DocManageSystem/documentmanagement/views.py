@@ -469,9 +469,18 @@ def doc_commit(request):
     
     user = request.META.get('user')
     project = Project.objects.filter(projectname=projectname)
+    if len(project) == 0:
+        data = {"status": "fail, no such project"}
+        log(data["status"])
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+    
     project = project[0]
-    if (doc.private == '1' and doc.owner != user.username) or \
-        (doc.public == '0' and project.department != user.department):
+    if (doc.owner == user.username) or \
+        (doc.private == '0' and doc.department == user.department):
+        pass
+    # if (doc.private == '1' and doc.owner != user.username) or \
+    #     (doc.public == '0' and project.department != user.department):
+    else:
         data = {"status": "fail, permission denied"}
         log(data["status"])
         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
